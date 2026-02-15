@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 
 type Theme = "light" | "dark";
 
@@ -15,6 +16,7 @@ type ThemeToggleLabels = {
 
 type ThemeToggleProps = {
   labels?: ThemeToggleLabels;
+  className?: string;
 };
 
 function isTheme(value: string | null): value is Theme {
@@ -40,7 +42,7 @@ function setDocumentTheme(theme: Theme) {
   document.documentElement.classList.toggle("dark", theme === "dark");
 }
 
-export default function ThemeToggle({ labels }: ThemeToggleProps) {
+export default function ThemeToggle({ labels, className }: ThemeToggleProps) {
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
 
   useEffect(() => {
@@ -57,7 +59,10 @@ export default function ThemeToggle({ labels }: ThemeToggleProps) {
       type="button"
       onClick={toggleTheme}
       aria-label={labels?.ariaLabel ?? "Toggle dark mode"}
-      className="btn-glow rounded-full border border-slate-300 px-3 py-1 text-xs font-medium text-slate-700 dark:border-slate-700 dark:text-slate-200"
+      className={cn(
+        "btn-glow inline-flex items-center justify-center rounded-full border border-slate-300 px-3 py-1 text-xs font-medium text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 dark:border-slate-700 dark:text-slate-200 dark:focus-visible:ring-cyan-400 dark:focus-visible:ring-offset-slate-900",
+        className,
+      )}
     >
       {theme === "light"
         ? (labels?.dark ?? "Dark")

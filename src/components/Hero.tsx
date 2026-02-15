@@ -26,7 +26,7 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="card-premium relative isolate overflow-hidden rounded-[2rem] px-6 py-16 sm:px-10 sm:py-20 lg:py-24"
+      className="card-premium relative isolate overflow-hidden rounded-[1.75rem] px-4 py-10 md:px-8 md:py-14 lg:px-16 lg:py-20"
     >
       <m.div
         className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-sky-400/25 blur-3xl dark:bg-cyan-500/20"
@@ -75,7 +75,7 @@ export default function Hero() {
         </m.div>
 
         <m.h1
-          className="text-5xl font-bold leading-[1.06] tracking-tight text-slate-900 sm:text-6xl lg:text-7xl dark:text-slate-100"
+          className="text-3xl font-bold leading-[1.08] tracking-tight text-slate-900 sm:text-5xl lg:text-7xl dark:text-slate-100"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: easing }}
@@ -87,7 +87,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, delay: 0.12, ease: easing }}
-          className="mt-4 bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-500 bg-clip-text text-lg font-medium text-transparent sm:text-2xl dark:from-cyan-400 dark:via-indigo-400 dark:to-purple-400"
+          className="mt-3 max-w-[32ch] break-words bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-500 bg-clip-text text-base font-medium leading-snug text-transparent sm:mt-4 sm:text-2xl dark:from-cyan-400 dark:via-indigo-400 dark:to-purple-400"
         >
           {role}
         </m.p>
@@ -96,7 +96,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, delay: 0.2, ease: easing }}
-          className="mt-6 max-w-3xl text-base leading-relaxed text-slate-600 sm:text-lg dark:text-slate-300"
+          className="mt-5 max-w-3xl text-sm leading-relaxed text-slate-600 sm:text-base lg:text-lg dark:text-slate-300"
         >
           Razvijam moderne web aplikacije koristeći React, Next.js i TypeScript,
           uz fokus na stabilan kod i dobro korisničko iskustvo.
@@ -106,7 +106,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, delay: 0.28, ease: easing }}
-          className="mt-2 max-w-3xl text-base leading-relaxed text-slate-600 sm:text-lg dark:text-slate-300"
+          className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600 sm:text-base lg:text-lg dark:text-slate-300"
         >
           Kroz projekte sam radila na razvoju funkcionalnosti od UI sloja do
           backend logike, uključujući REST API integracije i rad sa bazama
@@ -114,7 +114,7 @@ export default function Hero() {
         </m.p>
 
         <m.div
-          className="mt-8 flex flex-wrap gap-3"
+          className="mt-6 flex flex-wrap gap-2.5 sm:mt-8 sm:gap-3"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, delay: 0.32, ease: easing }}
@@ -122,7 +122,7 @@ export default function Hero() {
           {techIcons.map((tech) => (
             <span
               key={tech}
-              className="cursor-default rounded-full border border-sky-200/50 bg-white/80 px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm backdrop-blur-sm dark:border-cyan-800/50 dark:bg-slate-900/80 dark:text-slate-200"
+              className="cursor-default rounded-full border border-sky-200/50 bg-white/80 px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-sm backdrop-blur-sm sm:px-3 sm:py-1.5 sm:text-xs dark:border-cyan-800/50 dark:bg-slate-900/80 dark:text-slate-200"
             >
               {tech}
             </span>
@@ -133,16 +133,16 @@ export default function Hero() {
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, delay: 0.38, ease: easing }}
-          className="mt-10 flex flex-wrap gap-4"
+          className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:gap-4"
         >
-          <Link href="/#projects">
-            <span className="btn-glow relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white dark:bg-slate-100 dark:text-slate-900">
+          <Link href="/#projects" className="w-full sm:w-auto">
+            <span className="btn-glow relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white sm:w-auto dark:bg-slate-100 dark:text-slate-900">
               <span className="relative">View Projects</span>
               <span className="relative">→</span>
             </span>
           </Link>
-          <Link href="/#contact">
-            <span className="btn-glow inline-flex items-center gap-2 rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 dark:border-slate-700 dark:text-slate-200">
+          <Link href="/#contact" className="w-full sm:w-auto">
+            <span className="btn-glow inline-flex w-full items-center justify-center gap-2 rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 sm:w-auto dark:border-slate-700 dark:text-slate-200">
               Contact Me
             </span>
           </Link>

@@ -28,11 +28,13 @@
 
 html {
   scroll-behavior: smooth;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 @layer base {
   body {
-    @apply min-h-screen antialiased;
+    @apply min-h-screen overflow-x-hidden antialiased;
     background: var(--app-bg);
     color: rgb(15 23 42);
     transition: background-color 420ms ease, color 420ms ease;
@@ -109,17 +111,6 @@ html {
 .dark .noise-bg {
   opacity: 0.16;
   mix-blend-mode: screen;
-}
-
-.section-shell {
-  border-radius: 1.5rem;
-  padding: 1.5rem;
-}
-
-@media (min-width: 640px) {
-  .section-shell {
-    padding: 2rem;
-  }
 }
 
 /* Enhanced card with animated border */

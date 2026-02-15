@@ -33,16 +33,16 @@ export default function SiteShell({ children, currentYear }: SiteShellProps) {
         <div className="relative z-10 flex min-h-screen flex-col">
           <Navbar />
 
-          <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:px-6 lg:px-8">
+          <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 md:px-8 md:py-8 lg:px-16 lg:py-10">
             {children}
           </main>
 
-          <footer className="border-t border-slate-200/80 px-4 py-6 backdrop-blur-sm dark:border-slate-800/80 sm:px-6 lg:px-8">
-            <div className="mx-auto flex w-full max-w-6xl flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+          <footer className="border-t border-slate-200/80 px-4 py-5 backdrop-blur-sm dark:border-slate-800/80 md:px-8 lg:px-16">
+            <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-3 text-center sm:flex-row sm:text-left">
               <p className="text-sm text-slate-600 dark:text-slate-400">
                 © {currentYear} Jana Arsić
               </p>
-              <div className="flex items-center gap-4">
+              <div className="flex flex-wrap items-center justify-center gap-4 sm:justify-end">
                 {socialLinks.map((link) => (
                   <a
                     key={link.label}

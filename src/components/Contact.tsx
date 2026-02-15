@@ -58,7 +58,7 @@ export default function Contact() {
         description="Najbrži kontakt je putem email-a. Otvorena sam za junior prilike i projekte gde mogu da doprinesem frontend i full stack razvoju."
       >
         <m.div
-          className="grid gap-4 sm:grid-cols-2"
+          className="mx-auto grid w-full max-w-4xl grid-cols-1 gap-4 md:grid-cols-2"
           variants={containerVariants}
           initial="hidden"
           whileInView="show"
@@ -76,23 +76,23 @@ export default function Contact() {
                 target={isExternal ? "_blank" : undefined}
                 rel={isExternal ? "noreferrer noopener" : undefined}
                 whileHover={shouldReduceMotion ? undefined : { y: -3, scale: 1.01 }}
-                className="card-premium group relative rounded-2xl p-5"
+                className="card-premium group relative min-w-0 rounded-2xl p-4 text-center sm:p-5 sm:text-left"
               >
-                <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200/80 bg-white/80 text-slate-700 shadow-sm dark:border-slate-700/80 dark:bg-slate-900/80 dark:text-slate-200">
+                <div className="mb-4 inline-flex h-10 w-10 items-center justify-center self-center rounded-xl border border-slate-200/80 bg-white/80 text-slate-700 shadow-sm dark:border-slate-700/80 dark:bg-slate-900/80 dark:text-slate-200">
                   <Icon className="h-5 w-5" />
                 </div>
 
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
                   {card.title}
                 </p>
-                <p className="mt-2 text-base font-semibold text-slate-900 dark:text-slate-100">
+                <p className="mt-2 break-all text-sm font-semibold text-slate-900 sm:text-base dark:text-slate-100">
                   {card.value}
                 </p>
                 <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
                   {card.description}
                 </p>
 
-                <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-slate-800 dark:text-slate-100">
+                <span className="mt-4 inline-flex w-full items-center justify-center gap-2 text-sm font-semibold text-slate-800 sm:w-auto sm:justify-start dark:text-slate-100">
                   {card.cta}
                   <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                 </span>
@@ -106,15 +106,20 @@ export default function Contact() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.25 }}
-          className="mt-4 rounded-2xl border border-sky-200/70 bg-white/70 p-5 text-sm text-slate-700 shadow-[0_10px_35px_rgba(56,189,248,0.12)] backdrop-blur-md dark:border-cyan-500/30 dark:bg-slate-900/65 dark:text-slate-200 dark:shadow-[0_16px_45px_rgba(34,211,238,0.15)]"
+          className="mx-auto mt-4 max-w-4xl rounded-2xl border border-sky-200/70 bg-white/70 p-4 text-sm text-slate-700 shadow-[0_10px_35px_rgba(56,189,248,0.12)] backdrop-blur-md sm:p-5 dark:border-cyan-500/30 dark:bg-slate-900/65 dark:text-slate-200 dark:shadow-[0_16px_45px_rgba(34,211,238,0.15)]"
         >
-          <p className="inline-flex items-start gap-2 leading-relaxed">
-            <Sparkles className="mt-0.5 h-4 w-4 text-sky-500 dark:text-cyan-400" />
-            Najbolje je da mi pošalješ poruku na{" "}
-            <a className="text-link font-semibold" href="mailto:janaarsic04@gmail.com">
-              janaarsic04@gmail.com
-            </a>{" "}
-            i dodaš kratak opis projekta ili pozicije.
+          <p className="flex flex-col items-center gap-2 text-center leading-relaxed sm:flex-row sm:items-start sm:text-left">
+            <Sparkles className="h-4 w-4 shrink-0 text-sky-500 dark:text-cyan-400 sm:mt-0.5" />
+            <span>
+              Najbolje je da mi pošalješ poruku na{" "}
+              <a
+                className="text-link break-all font-semibold"
+                href="mailto:janaarsic04@gmail.com"
+              >
+                janaarsic04@gmail.com
+              </a>{" "}
+              i dodaš kratak opis projekta ili pozicije.
+            </span>
           </p>
         </m.div>
       </Section>

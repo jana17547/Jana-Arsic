@@ -20,8 +20,14 @@ export default function Section({
   contentClassName,
 }: SectionProps) {
   return (
-    <section id={id} className={cn("card-premium section-shell", className)}>
-      <div className={cn("space-y-4", contentClassName)}>
+    <section
+      id={id}
+      className={cn(
+        "card-premium section-shell rounded-3xl px-4 py-6 md:px-8 md:py-8 lg:px-16 lg:py-10",
+        className,
+      )}
+    >
+      <div className={cn("space-y-4 md:space-y-5", contentClassName)}>
         {(eyebrow || title || description) && (
           <header className="space-y-3">
             {eyebrow ? (
@@ -29,11 +35,11 @@ export default function Section({
                 {eyebrow}
               </p>
             ) : null}
-            <h2 className="section-title text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-slate-100">
+            <h2 className="section-title text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl lg:text-4xl dark:text-slate-100">
               {title}
             </h2>
             {description ? (
-              <p className="section-description max-w-3xl text-base leading-relaxed text-slate-600 dark:text-slate-300">
+              <p className="section-description max-w-3xl text-sm leading-relaxed text-slate-600 sm:text-base dark:text-slate-300">
                 {description}
               </p>
             ) : null}

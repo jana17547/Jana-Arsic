@@ -90,7 +90,7 @@ export default function RootLayout({
     <html lang="sr" suppressHydrationWarning>
       <body
         suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} overflow-x-hidden antialiased`}
       >
         <SiteShell currentYear={currentYear}>{children}</SiteShell>
       </body>
