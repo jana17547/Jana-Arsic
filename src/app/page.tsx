@@ -1,9 +1,18 @@
-import About from "@/components/About";
-import Contact from "@/components/Contact";
-import Education from "@/components/Education";
+import dynamic from "next/dynamic";
+import type { Metadata } from "next";
 import Hero from "@/components/Hero";
-import Projects from "@/components/Projects";
-import Skills from "@/components/Skills";
+
+const About = dynamic(() => import("@/components/About"));
+const Skills = dynamic(() => import("@/components/Skills"));
+const Projects = dynamic(() => import("@/components/Projects"));
+const Education = dynamic(() => import("@/components/Education"));
+const Contact = dynamic(() => import("@/components/Contact"));
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/",
+  },
+};
 
 export default function Home() {
   return (

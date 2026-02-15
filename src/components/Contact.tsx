@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import { ArrowUpRight, Github, Mail, Sparkles } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import Section from "@/components/Section";
@@ -47,6 +47,8 @@ const itemVariants = {
 };
 
 export default function Contact() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <Reveal>
       <Section
@@ -55,7 +57,7 @@ export default function Contact() {
         title="Hajde da se povežemo"
         description="Najbrži kontakt je putem email-a. Otvorena sam za junior prilike i projekte gde mogu da doprinesem frontend i full stack razvoju."
       >
-        <motion.div
+        <m.div
           className="grid gap-4 sm:grid-cols-2"
           variants={containerVariants}
           initial="hidden"
@@ -67,14 +69,13 @@ export default function Contact() {
             const isExternal = card.href.startsWith("http");
 
             return (
-              <motion.a
+              <m.a
                 key={card.title}
                 variants={itemVariants}
                 href={card.href}
                 target={isExternal ? "_blank" : undefined}
-                rel={isExternal ? "noopener noreferrer" : undefined}
-                whileHover={{ y: -4, scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
+                rel={isExternal ? "noreferrer noopener" : undefined}
+                whileHover={shouldReduceMotion ? undefined : { y: -3, scale: 1.01 }}
                 className="card-premium group relative rounded-2xl p-5"
               >
                 <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200/80 bg-white/80 text-slate-700 shadow-sm dark:border-slate-700/80 dark:bg-slate-900/80 dark:text-slate-200">
@@ -95,12 +96,12 @@ export default function Contact() {
                   {card.cta}
                   <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                 </span>
-              </motion.a>
+              </m.a>
             );
           })}
-        </motion.div>
+        </m.div>
 
-        <motion.div
+        <m.div
           variants={itemVariants}
           initial="hidden"
           whileInView="show"
@@ -115,7 +116,7 @@ export default function Contact() {
             </a>{" "}
             i dodaš kratak opis projekta ili pozicije.
           </p>
-        </motion.div>
+        </m.div>
       </Section>
     </Reveal>
   );

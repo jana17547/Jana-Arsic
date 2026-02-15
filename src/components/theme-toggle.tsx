@@ -21,32 +21,35 @@ function isTheme(value: string | null): value is Theme {
   return value === "light" || value === "dark";
 }
 
+function getInitialTheme(): Theme {
+  if (typeof window === "undefined") {
+    return "light";
+  }
+
+  const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+  if (isTheme(savedTheme)) {
+    return savedTheme;
+  }
+
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+}
+
 function setDocumentTheme(theme: Theme) {
   document.documentElement.classList.toggle("dark", theme === "dark");
 }
 
 export default function ThemeToggle({ labels }: ThemeToggleProps) {
-  const [theme, setTheme] = useState<Theme>("light");
-  const [mounted, setMounted] = useState(false);
+  const [theme, setTheme] = useState<Theme>(getInitialTheme);
 
   useEffect(() => {
-    const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
-    const systemTheme: Theme = window.matchMedia("(prefers-color-scheme: dark)")
-      .matches
-      ? "dark"
-      : "light";
-    const initialTheme = isTheme(savedTheme) ? savedTheme : systemTheme;
-
-    setTheme(initialTheme);
-    setDocumentTheme(initialTheme);
-    setMounted(true);
-  }, []);
+    setDocumentTheme(theme);
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  }, [theme]);
 
   const toggleTheme = () => {
-    const nextTheme: Theme = theme === "light" ? "dark" : "light";
-    setTheme(nextTheme);
-    setDocumentTheme(nextTheme);
-    window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+    setTheme((current) => (current === "light" ? "dark" : "light"));
   };
 
   return (
@@ -56,11 +59,9 @@ export default function ThemeToggle({ labels }: ThemeToggleProps) {
       aria-label={labels?.ariaLabel ?? "Toggle dark mode"}
       className="btn-glow rounded-full border border-slate-300 px-3 py-1 text-xs font-medium text-slate-700 dark:border-slate-700 dark:text-slate-200"
     >
-      {mounted
-        ? theme === "light"
-          ? (labels?.dark ?? "Dark")
-          : (labels?.light ?? "Light")
-        : (labels?.neutral ?? "Theme")}
+      {theme === "light"
+        ? (labels?.dark ?? "Dark")
+        : (labels?.light ?? "Light")}
     </button>
   );
 }

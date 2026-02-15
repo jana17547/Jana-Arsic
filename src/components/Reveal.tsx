@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, type Variants, useInView } from "framer-motion";
+import { m, type Variants, useInView } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 const easing: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -64,7 +64,7 @@ export default function Reveal({
   };
 
   return (
-    <motion.div
+    <m.div
       ref={ref}
       className={cn(className)}
       variants={variants}
@@ -72,6 +72,6 @@ export default function Reveal({
       animate={isInView ? "show" : "hidden"}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 }

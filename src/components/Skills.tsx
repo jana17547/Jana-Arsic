@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import Reveal from "@/components/Reveal";
 import Section from "@/components/Section";
 
@@ -58,20 +58,9 @@ const cardVariants = {
   },
 };
 
-const skillBadgeVariants = {
-  hidden: { opacity: 0, scale: 0 },
-  show: {
-    opacity: 1,
-    scale: 1,
-    transition: {
-      type: "spring" as const,
-      stiffness: 260,
-      damping: 20,
-    },
-  },
-};
-
 export default function Skills() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <Reveal>
       <Section
@@ -80,24 +69,28 @@ export default function Skills() {
         title="Tehnologije i alati"
         description="Fokus mi je razvoj frontend rešenja u React i Next.js okruženju, uz backend iskustvo koje omogućava full stack realizaciju funkcionalnosti."
       >
-        <motion.div
+        <m.div
           className="grid gap-5 md:grid-cols-2"
           variants={{
             hidden: {},
-            show: { transition: { staggerChildren: 0.1 } },
+            show: { transition: { staggerChildren: 0.06 } },
           }}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.15 }}
         >
           {skillsByCategory.map((group) => (
-            <motion.article
+            <m.article
               key={group.category}
               variants={cardVariants}
-              whileHover={{
-                y: -4,
-                transition: { duration: 0.3, ease: "easeOut" },
-              }}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : {
+                      y: -3,
+                      transition: { duration: 0.25, ease: "easeOut" },
+                    }
+              }
               className="card-premium group relative space-y-3 rounded-2xl p-5"
             >
               {/* Hover glow effect */}
@@ -109,32 +102,19 @@ export default function Skills() {
                 <h3 className={`inline-block bg-gradient-to-r ${group.color} ${group.darkColor} bg-clip-text text-sm font-semibold uppercase tracking-wide text-transparent`}>
                   {group.category}
                 </h3>
-                <motion.ul
-                  className="mt-3 flex flex-wrap gap-2"
-                  variants={{
-                    hidden: {},
-                    show: { transition: { staggerChildren: 0.04, delayChildren: 0.1 } },
-                  }}
-                >
+                <ul className="mt-3 flex flex-wrap gap-2">
                   {group.skills.map((skill) => (
-                    <motion.li key={skill} variants={skillBadgeVariants}>
-                      <motion.span
-                        whileHover={{
-                          scale: 1.1,
-                          y: -2,
-                          boxShadow: "0 4px 20px rgba(56,189,248,0.2)",
-                        }}
-                        className="inline-flex cursor-default rounded-full border border-slate-300/70 bg-white/75 px-2.5 py-1 text-xs font-medium text-slate-700 transition-colors dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200"
-                      >
+                    <li key={skill}>
+                      <span className="inline-flex cursor-default rounded-full border border-slate-300/70 bg-white/75 px-2.5 py-1 text-xs font-medium text-slate-700 transition-colors dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200">
                         {skill}
-                      </motion.span>
-                    </motion.li>
+                      </span>
+                    </li>
                   ))}
-                </motion.ul>
+                </ul>
               </div>
-            </motion.article>
+            </m.article>
           ))}
-        </motion.div>
+        </m.div>
       </Section>
     </Reveal>
   );

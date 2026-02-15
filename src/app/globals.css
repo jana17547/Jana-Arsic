@@ -153,10 +153,7 @@ html {
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   transition: opacity 280ms ease;
-}
-
-.card-premium:hover::before {
-  opacity: 0.95;
+  will-change: opacity;
 }
 
 .card-premium::after {
@@ -175,11 +172,7 @@ html {
     transparent
   );
   transition: opacity 340ms ease, transform 520ms ease;
-}
-
-.card-premium:hover::after {
-  opacity: 1;
-  transform: rotate(26deg) translateX(22%);
+  will-change: transform, opacity;
 }
 
 .nav-link {
@@ -286,6 +279,17 @@ html {
   box-shadow: 0 25px 70px rgba(2, 6, 23, 0.6);
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .card-premium:hover::before {
+    opacity: 0.95;
+  }
+
+  .card-premium:hover::after {
+    opacity: 1;
+    transform: rotate(26deg) translateX(22%);
+  }
+}
+
 @keyframes auroraFloat {
   0% {
     transform: translate3d(-1.5%, -1.5%, 0) scale(1);
@@ -295,6 +299,35 @@ html {
   }
   100% {
     transform: translate3d(1.5%, 2%, 0) scale(1.02);
+  }
+}
+
+@media (max-width: 767px) {
+  .aurora-bg {
+    animation: none;
+    filter: blur(46px) saturate(110%);
+  }
+
+  .noise-bg {
+    opacity: 0.1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .aurora-bg {
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 

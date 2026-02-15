@@ -1,10 +1,18 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useMotionTemplate, useMotionValue, useSpring } from "framer-motion";
+import {
+  m,
+  useMotionTemplate,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+} from "framer-motion";
 import { ExternalLink, Github } from "lucide-react";
 import type { Project } from "@/data/projects";
+import { getBlurDataURL } from "@/lib/image";
 import { cn } from "@/lib/utils";
 
 type ProjectCardProps = {
@@ -14,7 +22,15 @@ type ProjectCardProps = {
 
 const springConfig = { stiffness: 180, damping: 20, mass: 0.6 };
 
-export default function ProjectCard({ project, featured = false }: ProjectCardProps) {
+export default function ProjectCard({
+  project,
+  featured = false,
+}: ProjectCardProps) {
+  const shouldReduceMotion = useReducedMotion();
+  const [isInteractive, setIsInteractive] = useState(false);
+  const rectRef = useRef<DOMRect | null>(null);
+  const rafRef = useRef<number>(0);
+
   const rotateXRaw = useMotionValue(0);
   const rotateYRaw = useMotionValue(0);
   const pointerX = useMotionValue(50);
@@ -23,17 +39,44 @@ export default function ProjectCard({ project, featured = false }: ProjectCardPr
   const rotateX = useSpring(rotateXRaw, springConfig);
   const rotateY = useSpring(rotateYRaw, springConfig);
 
-  const shine = useMotionTemplate`radial-gradient(340px circle at ${pointerX}% ${pointerY}%, rgba(125, 211, 252, 0.24), rgba(129, 140, 248, 0.12) 40%, transparent 70%)`;
+  const shine = useMotionTemplate`radial-gradient(280px circle at ${pointerX}% ${pointerY}%, rgba(125, 211, 252, 0.24), rgba(129, 140, 248, 0.12) 40%, transparent 70%)`;
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 1024px) and (pointer: fine)");
+    const updateInteractive = () => setIsInteractive(mediaQuery.matches);
+    updateInteractive();
+    mediaQuery.addEventListener("change", updateInteractive);
+
+    return () => mediaQuery.removeEventListener("change", updateInteractive);
+  }, []);
+
+  const onPointerEnter = (event: React.PointerEvent<HTMLElement>) => {
+    rectRef.current = event.currentTarget.getBoundingClientRect();
+  };
 
   const onPointerMove = (event: React.PointerEvent<HTMLElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width;
-    const y = (event.clientY - rect.top) / rect.height;
+    if (!isInteractive || shouldReduceMotion || rafRef.current) {
+      return;
+    }
 
-    pointerX.set(x * 100);
-    pointerY.set(y * 100);
-    rotateYRaw.set((x - 0.5) * 6);
-    rotateXRaw.set((0.5 - y) * 6);
+    const rect = rectRef.current;
+    if (!rect) {
+      return;
+    }
+
+    const clientX = event.clientX;
+    const clientY = event.clientY;
+
+    rafRef.current = window.requestAnimationFrame(() => {
+      const x = (clientX - rect.left) / rect.width;
+      const y = (clientY - rect.top) / rect.height;
+
+      pointerX.set(x * 100);
+      pointerY.set(y * 100);
+      rotateYRaw.set((x - 0.5) * 5);
+      rotateXRaw.set((0.5 - y) * 5);
+      rafRef.current = 0;
+    });
   };
 
   const onPointerLeave = () => {
@@ -41,27 +84,39 @@ export default function ProjectCard({ project, featured = false }: ProjectCardPr
     rotateYRaw.set(0);
     pointerX.set(50);
     pointerY.set(50);
+    rectRef.current = null;
+    if (rafRef.current) {
+      window.cancelAnimationFrame(rafRef.current);
+      rafRef.current = 0;
+    }
   };
 
   return (
-    <motion.article
+    <m.article
+      onPointerEnter={onPointerEnter}
       onPointerMove={onPointerMove}
       onPointerLeave={onPointerLeave}
-      style={{
-        rotateX,
-        rotateY,
-        transformStyle: "preserve-3d",
-        perspective: 1200,
-      }}
+      style={
+        !shouldReduceMotion && isInteractive
+          ? {
+              rotateX,
+              rotateY,
+              transformStyle: "preserve-3d",
+              perspective: 1200,
+            }
+          : undefined
+      }
       className={cn(
         "card-premium group relative flex h-full flex-col rounded-3xl",
         featured && "ring-1 ring-sky-300/70 dark:ring-cyan-400/30",
       )}
     >
-      <motion.div
-        style={{ background: shine }}
-        className="pointer-events-none absolute inset-0 rounded-3xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-      />
+      {!shouldReduceMotion && isInteractive ? (
+        <m.div
+          style={{ background: shine }}
+          className="pointer-events-none absolute inset-0 rounded-3xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        />
+      ) : null}
 
       <div className="relative z-10 flex h-full flex-col">
         <Link
@@ -75,9 +130,10 @@ export default function ProjectCard({ project, featured = false }: ProjectCardPr
             src={project.coverImage}
             alt={project.imageAlt}
             fill
-            sizes="(max-width: 768px) 100vw, 50vw"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 700px"
+            placeholder="blur"
+            blurDataURL={getBlurDataURL(16, 9)}
             className="object-cover transition duration-300 group-hover:scale-[1.03]"
-            priority={featured}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-transparent to-transparent" />
           {featured ? (
@@ -99,29 +155,11 @@ export default function ProjectCard({ project, featured = false }: ProjectCardPr
             </p>
           </div>
 
-          <motion.ul
-            className="list-disc space-y-1 pl-5 text-sm leading-relaxed text-slate-600 dark:text-slate-300"
-            variants={{
-              hidden: {},
-              show: { transition: { staggerChildren: 0.07, delayChildren: 0.04 } },
-            }}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.2 }}
-          >
+          <ul className="list-disc space-y-1 pl-5 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
             {project.highlights.slice(0, 4).map((highlight) => (
-              <motion.li
-                key={highlight}
-                variants={{
-                  hidden: { opacity: 0, y: 8 },
-                  show: { opacity: 1, y: 0 },
-                }}
-                transition={{ duration: 0.35, ease: "easeOut" }}
-              >
-                {highlight}
-              </motion.li>
+              <li key={highlight}>{highlight}</li>
             ))}
-          </motion.ul>
+          </ul>
 
           <ul className="flex flex-wrap gap-2">
             {project.technologies.map((technology) => (
@@ -137,7 +175,7 @@ export default function ProjectCard({ project, featured = false }: ProjectCardPr
             <a
               href={project.githubUrl}
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noreferrer noopener"
               className="btn-glow inline-flex items-center gap-1.5 rounded-full border border-slate-300/80 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:text-slate-200"
             >
               <Github className="h-3.5 w-3.5" />
@@ -148,7 +186,7 @@ export default function ProjectCard({ project, featured = false }: ProjectCardPr
               <a
                 href={project.demoUrl}
                 target="_blank"
-                rel="noopener noreferrer"
+                rel="noreferrer noopener"
                 className="btn-glow inline-flex items-center gap-1.5 rounded-full border border-slate-300/80 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:text-slate-200"
               >
                 <ExternalLink className="h-3.5 w-3.5" />
@@ -162,6 +200,6 @@ export default function ProjectCard({ project, featured = false }: ProjectCardPr
           </div>
         </div>
       </div>
-    </motion.article>
+    </m.article>
   );
 }

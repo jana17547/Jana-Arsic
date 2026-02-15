@@ -1,15 +1,21 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
+import { AnimatePresence, m } from "framer-motion";
+import { ExternalLink, Github } from "lucide-react";
 import type { Project } from "@/data/projects";
-import { AnimatePresence, motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, ExternalLink, Github, X } from "lucide-react";
+import { getBlurDataURL } from "@/lib/image";
 
 type ProjectDetailProps = {
   project: Project;
 };
+
+const ProjectLightbox = dynamic(() => import("@/components/ProjectLightbox"), {
+  ssr: false,
+});
 
 export default function ProjectDetail({ project }: ProjectDetailProps) {
   const screenshots = useMemo(
@@ -17,10 +23,12 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
     [project.coverImage, project.screenshots],
   );
   const [activeScreenshot, setActiveScreenshot] = useState<number | null>(null);
+  const [showScreenshots, setShowScreenshots] = useState(false);
+  const screenshotsRef = useRef<HTMLDivElement | null>(null);
 
-  const closeLightbox = () => setActiveScreenshot(null);
+  const closeLightbox = useCallback(() => setActiveScreenshot(null), []);
 
-  const goNext = () => {
+  const goNext = useCallback(() => {
     setActiveScreenshot((current) => {
       if (current === null) {
         return 0;
@@ -28,9 +36,9 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
 
       return (current + 1) % screenshots.length;
     });
-  };
+  }, [screenshots.length]);
 
-  const goPrev = () => {
+  const goPrev = useCallback(() => {
     setActiveScreenshot((current) => {
       if (current === null) {
         return 0;
@@ -38,7 +46,33 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
 
       return current === 0 ? screenshots.length - 1 : current - 1;
     });
-  };
+  }, [screenshots.length]);
+
+  useEffect(() => {
+    if (showScreenshots) {
+      return;
+    }
+
+    const node = screenshotsRef.current;
+    if (!node) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0]?.isIntersecting) {
+          return;
+        }
+
+        setShowScreenshots(true);
+        observer.disconnect();
+      },
+      { rootMargin: "260px 0px" },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [showScreenshots]);
 
   useEffect(() => {
     if (activeScreenshot === null) {
@@ -61,11 +95,11 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [activeScreenshot, screenshots.length]);
+  }, [activeScreenshot, closeLightbox, goNext, goPrev]);
 
   return (
     <>
-      <motion.article
+      <m.article
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: "easeOut" }}
@@ -85,8 +119,9 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
               alt={project.imageAlt}
               fill
               sizes="(max-width: 1024px) 100vw, 1024px"
+              placeholder="blur"
+              blurDataURL={getBlurDataURL(16, 9)}
               className="object-cover"
-              priority
             />
           </div>
 
@@ -129,38 +164,50 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
               </ul>
             </div>
 
-            <div id="project-screenshots" className="space-y-3">
+            <div id="project-screenshots" ref={screenshotsRef} className="space-y-3">
               <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
                 Screenshots
               </h2>
-              <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {screenshots.map((screenshot, index) => (
-                  <li key={`${screenshot}-${index}`}>
-                    <button
-                      type="button"
-                      onClick={() => setActiveScreenshot(index)}
-                      className="group relative block w-full overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-100/70 shadow-sm ring-0 transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 dark:border-slate-800 dark:bg-slate-900/80 dark:hover:border-slate-700"
-                    >
-                      <div className="relative h-40 w-full">
-                        <Image
-                          src={screenshot}
-                          alt={`${project.title} screenshot ${index + 1}`}
-                          fill
-                          sizes="(max-width: 768px) 100vw, 33vw"
-                          className="object-cover transition duration-300 group-hover:scale-[1.03]"
-                        />
-                      </div>
-                    </button>
-                  </li>
-                ))}
-              </ul>
+              {showScreenshots ? (
+                <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {screenshots.map((screenshot, index) => (
+                    <li key={`${screenshot}-${index}`}>
+                      <button
+                        type="button"
+                        onClick={() => setActiveScreenshot(index)}
+                        className="group relative block w-full overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-100/70 shadow-sm ring-0 transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 dark:border-slate-800 dark:bg-slate-900/80 dark:hover:border-slate-700"
+                      >
+                        <div className="relative h-40 w-full">
+                          <Image
+                            src={screenshot}
+                            alt={`${project.title} screenshot ${index + 1}`}
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            placeholder="blur"
+                            blurDataURL={getBlurDataURL(16, 9)}
+                            className="object-cover transition duration-300 group-hover:scale-[1.03]"
+                          />
+                        </div>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowScreenshots(true)}
+                  className="btn-glow inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 dark:border-slate-700 dark:text-slate-200"
+                >
+                  Učitaj screenshots
+                </button>
+              )}
             </div>
 
             <div className="flex flex-wrap gap-3">
               <a
                 href={project.githubUrl}
                 target="_blank"
-                rel="noopener noreferrer"
+                rel="noreferrer noopener"
                 className="btn-glow inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 dark:border-slate-700 dark:text-slate-200"
               >
                 <Github className="h-4 w-4" />
@@ -170,7 +217,7 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
                 <a
                   href={project.demoUrl}
                   target="_blank"
-                  rel="noopener noreferrer"
+                  rel="noreferrer noopener"
                   className="btn-glow inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white dark:bg-slate-100 dark:text-slate-900"
                 >
                   <ExternalLink className="h-4 w-4" />
@@ -179,7 +226,10 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
               ) : (
                 <button
                   type="button"
-                  onClick={() => setActiveScreenshot(0)}
+                  onClick={() => {
+                    setShowScreenshots(true);
+                    setActiveScreenshot(0);
+                  }}
                   className="btn-glow inline-flex items-center gap-2 rounded-full border border-dashed border-slate-300 px-4 py-2 text-sm font-semibold text-slate-600 dark:border-slate-700 dark:text-slate-300"
                 >
                   Screenshots available
@@ -188,76 +238,18 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
             </div>
           </div>
         </section>
-      </motion.article>
+      </m.article>
 
       <AnimatePresence>
         {activeScreenshot !== null ? (
-          <motion.div
-            className="fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <button
-              type="button"
-              onClick={closeLightbox}
-              className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
-              aria-label="Zatvori prikaz slike"
-            />
-
-            <motion.div
-              className="card-premium relative z-10 w-full max-w-5xl overflow-hidden rounded-3xl"
-              initial={{ opacity: 0, y: 14, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.98 }}
-              transition={{ duration: 0.28, ease: "easeOut" }}
-            >
-              <button
-                type="button"
-                onClick={closeLightbox}
-                className="absolute right-3 top-3 z-20 inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-300 bg-white/85 text-slate-700 dark:border-slate-700 dark:bg-slate-900/85 dark:text-slate-200"
-              >
-                <X className="h-4 w-4" />
-              </button>
-
-              <div className="relative aspect-[16/9] w-full">
-                <Image
-                  src={screenshots[activeScreenshot]}
-                  alt={`${project.title} screenshot ${activeScreenshot + 1}`}
-                  fill
-                  sizes="(max-width: 1200px) 100vw, 1200px"
-                  className="object-contain bg-slate-950"
-                />
-              </div>
-
-              <div className="flex items-center justify-between border-t border-slate-200/80 px-4 py-3 dark:border-slate-800/80 sm:px-6">
-                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                  {project.title}
-                </p>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={goPrev}
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-300 text-slate-700 dark:border-slate-700 dark:text-slate-200"
-                    aria-label="Prethodna slika"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </button>
-                  <span className="text-xs text-slate-500 dark:text-slate-400">
-                    {activeScreenshot + 1} / {screenshots.length}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={goNext}
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-300 text-slate-700 dark:border-slate-700 dark:text-slate-200"
-                    aria-label="Sledeća slika"
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
+          <ProjectLightbox
+            projectTitle={project.title}
+            screenshots={screenshots}
+            activeScreenshot={activeScreenshot}
+            onClose={closeLightbox}
+            onPrev={goPrev}
+            onNext={goNext}
+          />
         ) : null}
       </AnimatePresence>
     </>

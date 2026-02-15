@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import Reveal from "@/components/Reveal";
 import Section from "@/components/Section";
 
@@ -38,12 +38,14 @@ const timelineVariants = {
 };
 
 export default function Education() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <Reveal>
       <Section id="education" eyebrow="Obrazovanje" title="Akademski put">
         <div className="relative">
           {/* Timeline line */}
-          <motion.div
+          <m.div
             className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-sky-500 via-indigo-500 to-purple-500 dark:from-cyan-400 dark:via-indigo-400 dark:to-purple-400"
             initial={{ scaleY: 0, originY: 0 }}
             whileInView={{ scaleY: 1 }}
@@ -53,7 +55,7 @@ export default function Education() {
 
           <ul className="space-y-4">
             {educationItems.map((item, i) => (
-              <motion.li
+              <m.li
                 key={item.title}
                 custom={i}
                 variants={timelineVariants}
@@ -63,7 +65,7 @@ export default function Education() {
                 className="group relative pl-8"
               >
                 {/* Timeline dot */}
-                <motion.div
+                <m.div
                   className={`absolute left-0 top-5 h-[22px] w-[22px] rounded-full border-2 ${
                     item.status === "active"
                       ? "border-sky-500 bg-sky-500/20 dark:border-cyan-400 dark:bg-cyan-400/20"
@@ -78,21 +80,17 @@ export default function Education() {
                     stiffness: 300,
                     damping: 15,
                   }}
-                >
-                  {item.status === "active" && (
-                    <motion.div
-                      className="absolute inset-0 rounded-full bg-sky-500/30 dark:bg-cyan-400/30"
-                      animate={{ scale: [1, 1.8, 1], opacity: [0.6, 0, 0.6] }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    />
-                  )}
-                </motion.div>
+                />
 
-                <motion.div
+                <m.div
                   className="card-premium rounded-2xl p-4 transition-transform duration-300 group-hover:-translate-y-1"
-                  whileHover={{
-                    boxShadow: "0 8px 30px rgba(56,189,248,0.15)",
-                  }}
+                  whileHover={
+                    shouldReduceMotion
+                      ? undefined
+                      : {
+                          boxShadow: "0 8px 26px rgba(56,189,248,0.12)",
+                        }
+                  }
                 >
                   <div className="flex items-start gap-2">
                     <div>
@@ -104,17 +102,13 @@ export default function Education() {
                       </p>
                     </div>
                     {item.status === "active" && (
-                      <motion.span
-                        className="shrink-0 rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-semibold text-sky-700 dark:bg-cyan-900/50 dark:text-cyan-300"
-                        animate={{ opacity: [1, 0.6, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      >
+                      <span className="shrink-0 rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-semibold text-sky-700 dark:bg-cyan-900/50 dark:text-cyan-300">
                         U toku
-                      </motion.span>
+                      </span>
                     )}
                   </div>
-                </motion.div>
-              </motion.li>
+                </m.div>
+              </m.li>
             ))}
           </ul>
         </div>

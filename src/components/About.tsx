@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import Reveal from "@/components/Reveal";
 import Section from "@/components/Section";
+import { getBlurDataURL } from "@/lib/image";
 
 const stats = [
   { label: "Projekata", value: "3+" },
@@ -12,6 +13,8 @@ const stats = [
 ];
 
 export default function About() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <Reveal>
       <Section id="about" eyebrow="O meni" title="Ko sam i kako radim">
@@ -27,18 +30,18 @@ export default function About() {
             </p>
 
             {/* Animated stats */}
-            <motion.div
+            <m.div
               className="flex flex-wrap gap-6"
               initial="hidden"
               whileInView="show"
               viewport={{ once: true, amount: 0.3 }}
               variants={{
                 hidden: {},
-                show: { transition: { staggerChildren: 0.15 } },
+                show: { transition: { staggerChildren: 0.1 } },
               }}
             >
               {stats.map((stat) => (
-                <motion.div
+                <m.div
                   key={stat.label}
                   variants={{
                     hidden: { opacity: 0, scale: 0.5, y: 20 },
@@ -53,7 +56,7 @@ export default function About() {
                       },
                     },
                   }}
-                  whileHover={{ scale: 1.1, y: -2 }}
+                  whileHover={shouldReduceMotion ? undefined : { scale: 1.05, y: -1 }}
                   className="text-center"
                 >
                   <span className="block bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-2xl font-bold text-transparent dark:from-cyan-400 dark:to-indigo-400">
@@ -62,40 +65,44 @@ export default function About() {
                   <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
                     {stat.label}
                   </span>
-                </motion.div>
+                </m.div>
               ))}
-            </motion.div>
+            </m.div>
           </div>
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
             whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
             viewport={{ once: true, amount: 0.25 }}
             transition={{
-              duration: 0.7,
+              duration: 0.55,
               ease: [0.22, 1, 0.36, 1],
-              delay: 0.1,
             }}
             className="group relative mx-auto sm:mx-0"
           >
             {/* Glow ring behind image */}
-            <motion.div
+            <m.div
               className="absolute -inset-3 rounded-2xl bg-gradient-to-r from-sky-500/20 via-indigo-500/20 to-purple-500/20 blur-xl dark:from-cyan-500/20 dark:via-indigo-500/15 dark:to-purple-500/15"
-              animate={{
-                opacity: [0.5, 0.8, 0.5],
-                scale: [1, 1.05, 1],
-              }}
+              animate={
+                shouldReduceMotion
+                  ? undefined
+                  : {
+                      opacity: [0.5, 0.75, 0.5],
+                      scale: [1, 1.03, 1],
+                    }
+              }
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             />
             <Image
-              src="/profile.jpg"
+              src="/img.jpg"
               alt="Profilna slika Jane Arsić"
               width={300}
               height={300}
+              placeholder="blur"
+              blurDataURL={getBlurDataURL(64, 64)}
               className="relative h-56 w-56 rounded-2xl border border-white/90 object-cover shadow-[0_18px_42px_rgba(15,23,42,0.2)] transition-transform duration-500 group-hover:scale-[1.03] sm:h-64 sm:w-64 dark:border-slate-700"
-              priority
             />
-          </motion.div>
+          </m.div>
         </div>
       </Section>
     </Reveal>
