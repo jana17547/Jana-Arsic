@@ -1,0 +1,12 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="64" y1="32" x2="448" y2="480" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0EA5E9"/>
+      <stop offset="1" stop-color="#14B8A6"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="80" fill="url(#bg)"/>
+  <circle cx="256" cy="206" r="92" fill="white" fill-opacity="0.92"/>
+  <path d="M96 440C96 354.98 164.98 286 250 286H262C347.02 286 416 354.98 416 440V448H96V440Z" fill="white" fill-opacity="0.92"/>
+  <text x="256" y="486" text-anchor="middle" fill="#0F172A" font-family="Arial, sans-serif" font-size="52" font-weight="700">JANA</text>
+</svg>
